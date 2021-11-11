@@ -1,0 +1,70 @@
+package framework.IoC;
+
+import framework.annotations.spring.Autowired;
+import framework.annotations.spring.Bean;
+import framework.annotations.spring.Controller;
+import framework.annotations.spring.Qualifier;
+import framework.annotations.spring.Scope;
+import framework.annotations.spring.Service;
+import framework.exceptions.DataAccessException;
+
+import java.lang.reflect.Field;
+
+public class BeanFactory {
+
+    private DependencyInjectionEngine dependencyInjectionEngine;
+
+    public BeanFactory (DependencyInjectionEngine dependencyInjectionEngine) {
+        this.dependencyInjectionEngine = dependencyInjectionEngine;
+    }
+
+    public Object createBean(Class clazz) throws InstantiationException, IllegalAccessException, DataAccessException {
+        Field[] fields = clazz.getDeclaredFields();
+        Object object = clazz.newInstance();
+
+        for (Field currField : fields) {
+            if (currField.isAnnotationPresent(Autowired.class)) {
+                recursiveInject(currField, object);
+            }
+        }
+        saveBeanToDependencyContainer(clazz, object);
+        return object;
+    }
+
+    private void recursiveInject(Field currField, Object object) throws IllegalAccessException, InstantiationException,
+        DataAccessException {
+        currField.setAccessible(true);
+        Class fieldsClass = currField.getType();
+
+        if (fieldsClass.isInterface()) {
+            injectQualifierForInterface(object, currField);
+        } else {
+            injectQualifierForClass(currField, object, fieldsClass);
+        }
+    }
+
+    private void injectQualifierForInterface(Object object, Field currField)
+        throws DataAccessException, InstantiationException, IllegalAccessException {
+        if (!currField.isAnnotationPresent(Qualifier.class)) {
+            throw new RuntimeException("No qualifier!");
+        }
+
+        String qualifier = currField.getAnnotation(Qualifier.class).value();
+        currField.set(object, dependencyInjectionEngine.inject(dependencyInjectionEngine.getDependencyContainer().getImplForInterface(qualifier)));
+    }
+
+    private void injectQualifierForClass(Field currField, Object object, Class fieldsClass)
+        throws DataAccessException, InstantiationException, IllegalAccessException {
+        currField.set(object, dependencyInjectionEngine.inject(fieldsClass));
+    }
+
+    private void saveBeanToDependencyContainer(Class clazz, Object object) {
+        if (clazz.isAnnotationPresent(Service.class) || clazz.isAnnotationPresent(Controller.class)) {
+            dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
+        }
+
+        if (clazz.isAnnotationPresent(Bean.class) && ((Bean)clazz.getAnnotation(Bean.class)).scope() == Scope.SINGLETON) {
+            dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
+        }
+    }
+}
