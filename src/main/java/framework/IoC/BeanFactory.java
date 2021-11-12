@@ -9,12 +9,14 @@ import framework.annotations.spring.Service;
 import framework.exceptions.DataAccessException;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class BeanFactory {
 
     private DependencyInjectionEngine dependencyInjectionEngine;
 
-    public BeanFactory (DependencyInjectionEngine dependencyInjectionEngine) {
+    public BeanFactory(DependencyInjectionEngine dependencyInjectionEngine) {
         this.dependencyInjectionEngine = dependencyInjectionEngine;
     }
 
@@ -25,6 +27,7 @@ public class BeanFactory {
         for (Field currField : fields) {
             if (currField.isAnnotationPresent(Autowired.class)) {
                 recursiveInject(currField, object);
+                doVerbose(currField);
             }
         }
         saveBeanToDependencyContainer(clazz, object);
@@ -50,7 +53,8 @@ public class BeanFactory {
         }
 
         String qualifier = currField.getAnnotation(Qualifier.class).value();
-        currField.set(object, dependencyInjectionEngine.inject(dependencyInjectionEngine.getDependencyContainer().getImplForInterface(qualifier)));
+        currField.set(object,
+                      dependencyInjectionEngine.inject(dependencyInjectionEngine.getDependencyContainer().getImplForInterface(qualifier)));
     }
 
     private void injectQualifierForClass(Field currField, Object object, Class fieldsClass)
@@ -63,8 +67,19 @@ public class BeanFactory {
             dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
         }
 
-        if (clazz.isAnnotationPresent(Bean.class) && ((Bean)clazz.getAnnotation(Bean.class)).scope() == Scope.SINGLETON) {
+        if (clazz.isAnnotationPresent(Bean.class) && ((Bean) clazz.getAnnotation(Bean.class)).scope() == Scope.SINGLETON) {
             dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
+        }
+    }
+
+    private void doVerbose(Field field) {
+        if (((Autowired) field.getAnnotation(Autowired.class)).verbose()) {
+            System.out.println(String.format("Initialized %s %s in %s on %s with %s",
+                                             field.getType(),
+                                             field.getName(),
+                                             field.getDeclaringClass(),
+                                             LocalDateTime.now(),
+                                             field.hashCode()));
         }
     }
 }

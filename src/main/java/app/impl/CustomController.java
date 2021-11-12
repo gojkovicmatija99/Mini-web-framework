@@ -6,6 +6,6 @@ import framework.annotations.spring.Controller;
 @Controller
 public class CustomController {
 
-    @Autowired(verbose = false)
+    @Autowired(verbose = true)
     CustomService serviceTest;
 }

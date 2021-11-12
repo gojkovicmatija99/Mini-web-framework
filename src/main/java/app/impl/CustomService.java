@@ -9,7 +9,7 @@ import framework.annotations.spring.Service;
 public class CustomService {
 
     @Qualifier("customRepository")
-    @Autowired(verbose = false)
+    @Autowired(verbose = true)
     private Repository repository;
 
     public String getResource() {

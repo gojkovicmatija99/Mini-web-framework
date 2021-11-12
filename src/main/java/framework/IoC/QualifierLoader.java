@@ -16,7 +16,7 @@ public class QualifierLoader {
         List<Class> classes = findAllClassesUsingClassLoader(packageName);
         return classes.stream()
                       .filter(clazz -> clazz.isAnnotationPresent(Qualifier.class))
-                      .collect(Collectors.toMap(clazz -> ((Qualifier) clazz.getAnnotation(Qualifier.class)).value(), Class::getClass));
+                      .collect(Collectors.toMap(clazz -> ((Qualifier) clazz.getAnnotation(Qualifier.class)).value(), clazz -> clazz));
     }
 
     private static List<Class> findAllClassesUsingClassLoader(String packageName) {
