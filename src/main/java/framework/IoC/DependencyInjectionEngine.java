@@ -1,5 +1,6 @@
 package framework.IoC;
 
+import framework.Framework;
 import framework.annotations.spring.Bean;
 import framework.annotations.spring.Component;
 import framework.annotations.spring.Controller;
@@ -9,16 +10,6 @@ import framework.exceptions.DataAccessException;
 import java.util.Map;
 
 public class DependencyInjectionEngine {
-
-    private final DependencyContainer dependencyContainer;
-
-    private final BeanFactory beanFactory;
-
-    public DependencyInjectionEngine(String packageName) {
-        this.beanFactory = new BeanFactory(this);
-        Map<String, Class> qualifiers = QualifierLoader.findAllClassesWithQualifier(packageName);
-        this.dependencyContainer = new DependencyContainer(qualifiers);
-    }
 
     public Object inject(Class clazz) throws InstantiationException, IllegalAccessException, DataAccessException {
         if (isClassInjectable(clazz)) {
@@ -36,14 +27,11 @@ public class DependencyInjectionEngine {
     }
 
     private Object getOrCreteBean(Class clazz) throws InstantiationException, IllegalAccessException, DataAccessException {
+        DependencyContainer dependencyContainer = Framework.getInstance().getDependencyContainer();
         if (dependencyContainer.contains(clazz)) {
             return dependencyContainer.getBean(clazz);
         } else {
-            return beanFactory.createBean(clazz);
+            return Framework.getInstance().getBeanFactory().createBean(clazz);
         }
-    }
-
-    public DependencyContainer getDependencyContainer() {
-        return dependencyContainer;
     }
 }

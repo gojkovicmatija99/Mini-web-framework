@@ -10,16 +10,19 @@ public class CustomRepository implements Repository {
 
     @Override
     public String get() {
-        return null;
+        System.out.println("Simulating DB get");
+        return "This resource is fetched from DB";
     }
 
     @Override
     public boolean update() {
+        System.out.println("Simulating DB update");
         return true;
     }
 
     @Override
     public boolean delete() {
+        System.out.println("Simulating DB delete");
         return true;
     }
 }

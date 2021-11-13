@@ -1,5 +1,6 @@
 package framework.IoC;
 
+import framework.Framework;
 import framework.annotations.spring.Autowired;
 import framework.annotations.spring.Bean;
 import framework.annotations.spring.Controller;
@@ -10,15 +11,8 @@ import framework.exceptions.DataAccessException;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class BeanFactory {
-
-    private DependencyInjectionEngine dependencyInjectionEngine;
-
-    public BeanFactory(DependencyInjectionEngine dependencyInjectionEngine) {
-        this.dependencyInjectionEngine = dependencyInjectionEngine;
-    }
 
     public Object createBean(Class clazz) throws InstantiationException, IllegalAccessException, DataAccessException {
         Field[] fields = clazz.getDeclaredFields();
@@ -48,32 +42,36 @@ public class BeanFactory {
 
     private void injectQualifierForInterface(Object object, Field currField)
         throws DataAccessException, InstantiationException, IllegalAccessException {
+        DependencyContainer dependencyContainer = Framework.getInstance().getDependencyContainer();
+        DependencyInjectionEngine dependencyInjectionEngine = Framework.getInstance().getDependencyInjectionEngine();
         if (!currField.isAnnotationPresent(Qualifier.class)) {
             throw new RuntimeException("No qualifier!");
         }
 
         String qualifier = currField.getAnnotation(Qualifier.class).value();
         currField.set(object,
-                      dependencyInjectionEngine.inject(dependencyInjectionEngine.getDependencyContainer().getImplForInterface(qualifier)));
+                      dependencyInjectionEngine.inject(dependencyContainer.getImplForInterface(qualifier)));
     }
 
     private void injectQualifierForClass(Field currField, Object object, Class fieldsClass)
         throws DataAccessException, InstantiationException, IllegalAccessException {
+        DependencyInjectionEngine dependencyInjectionEngine = Framework.getInstance().getDependencyInjectionEngine();
         currField.set(object, dependencyInjectionEngine.inject(fieldsClass));
     }
 
     private void saveBeanToDependencyContainer(Class clazz, Object object) {
+        DependencyContainer dependencyContainer = Framework.getInstance().getDependencyContainer();
         if (clazz.isAnnotationPresent(Service.class) || clazz.isAnnotationPresent(Controller.class)) {
-            dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
+            dependencyContainer.saveBean(clazz, object);
         }
 
         if (clazz.isAnnotationPresent(Bean.class) && ((Bean) clazz.getAnnotation(Bean.class)).scope() == Scope.SINGLETON) {
-            dependencyInjectionEngine.getDependencyContainer().saveBean(clazz, object);
+            dependencyContainer.saveBean(clazz, object);
         }
     }
 
     private void doVerbose(Field field) {
-        if (((Autowired) field.getAnnotation(Autowired.class)).verbose()) {
+        if (field.getAnnotation(Autowired.class).verbose()) {
             System.out.println(String.format("Initialized %s %s in %s on %s with %s",
                                              field.getType(),
                                              field.getName(),
