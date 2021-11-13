@@ -1,4 +1,4 @@
-package app.impl;
+package app.server.product.impl;
 
 import framework.annotations.http.GET;
 import framework.annotations.http.Path;
@@ -6,14 +6,14 @@ import framework.annotations.spring.Autowired;
 import framework.annotations.spring.Controller;
 
 @Controller
-public class CustomController {
+public class ProductController {
 
     @Autowired(verbose = true)
-    CustomService serviceTest;
+    ProductService productService;
 
     @GET
-    @Path("app/getMethod")
+    @Path("app/getProduct")
     public String getMethod() {
-        return serviceTest.getResource();
+        return productService.getProduct();
     }
 }

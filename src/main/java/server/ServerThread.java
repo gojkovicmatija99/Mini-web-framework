@@ -33,6 +33,7 @@ public class ServerThread implements Runnable {
             } else {
                 response = "400: Bad request";
             }
+            printWriter.println(response);
         } catch (Exception e) {
             e.printStackTrace();
         }

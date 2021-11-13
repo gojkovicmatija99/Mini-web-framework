@@ -36,6 +36,11 @@ public class Route {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(path, requestMethod);
+    }
+
+    @Override
     public String toString() {
         return "Route{" +
             "path='" + path + '\'' +
