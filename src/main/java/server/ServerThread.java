@@ -1,19 +1,18 @@
 package server;
 
-import com.google.gson.Gson;
+import server.dto.RequestMethod;
 import server.model.Route;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 
 public class ServerThread implements Runnable {
 
-    private Server server;
+    private final Server server;
 
-    private Socket socket;
+    private final Socket socket;
 
     public ServerThread(Server server, Socket socket) {
         this.server = server;
@@ -24,18 +23,24 @@ public class ServerThread implements Runnable {
     public void run() {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-            Gson gson = new Gson();
-            Route request = gson.fromJson(bufferedReader.readLine(), Route.class);
+            Route route = routeAdapter(bufferedReader.readLine());
             String response;
-            if (server.getRoutes().containsKey(request)) {
-                response = (String) server.getRoutes().get(request).callMethod(null);
+            if (server.getRoutes().containsKey(route)) {
+                response = (String) server.getRoutes().get(route).callMethod(null);
             } else {
                 response = "400: Bad request";
             }
-            printWriter.println(response);
+            socket.getOutputStream().write(response.getBytes("UTF-8"));
+            socket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Route routeAdapter(String request) {
+        String[] requestInfo = request.split(" ");
+        RequestMethod requestMethod = Objects.equals(requestInfo[0], "POST") ? RequestMethod.POST : RequestMethod.GET;
+        Route route = new Route(requestInfo[1], requestMethod);
+        return route;
     }
 }

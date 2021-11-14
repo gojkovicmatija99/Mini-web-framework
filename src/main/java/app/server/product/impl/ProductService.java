@@ -12,7 +12,7 @@ public class ProductService {
     @Autowired(verbose = true)
     private ProductRepository repository;
 
-    public String getProduct() {
+    public String getProducts() {
         return repository.get();
     }
 }

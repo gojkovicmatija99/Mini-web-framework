@@ -36,12 +36,12 @@ public class DiscoveryUtil {
 
     public static Map<Route, RouteResolver> discoverRoutes(String packageName) {
         List<Class> classes = findAllClassesUsingClassLoader(packageName);
-        Method[] methodsWithPath = classes.stream()
+        List<Method> methodsWithPath = classes.stream()
                                           .filter(clazz -> clazz.isAnnotationPresent(Controller.class))
                                           .map(clazz -> List.of(clazz.getMethods()))
                                           .reduce(new ArrayList<>(), DiscoveryUtil::mergeLists).stream()
                                           .filter(method -> method.isAnnotationPresent(Path.class))
-                                          .toArray(Method[]::new);
+                                          .collect(Collectors.toList());
         Map<Route, RouteResolver> routeMapping = new HashMap<>();
         for (Method method : methodsWithPath) {
             Route route = new Route(method.getAnnotation(Path.class).value(), getRequestMethod(method));

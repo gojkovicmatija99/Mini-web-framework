@@ -11,6 +11,6 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public String get() {
         System.out.println("[SERVER] SELECT * FROM Products");
-        return "Samsung TV - 400$";
+        return "Samsung TV - 400$\nPS5 - 800$\nJBL speaker - 200$";
     }
 }

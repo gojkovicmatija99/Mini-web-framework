@@ -12,8 +12,8 @@ public class ProductController {
     ProductService productService;
 
     @GET
-    @Path("app/getProduct")
+    @Path("/getProducts")
     public String getMethod() {
-        return productService.getProduct();
+        return productService.getProducts();
     }
 }
