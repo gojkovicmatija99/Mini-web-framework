@@ -12,12 +12,9 @@ public class OrderController {
     OrderService orderService;
 
     @POST
-    @Path("app/orderProduct")
+    @Path("/orderProducts")
     public String postMethod() {
-        if (orderService.placeOrder()) {
-            return "200 - OK";
-        } else {
-            return "500 - Internal Server Error";
-        }
+        orderService.placeOrder();
+        return "Products have been ordered";
     }
 }

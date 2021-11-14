@@ -23,12 +23,14 @@ public class ServerThread implements Runnable {
     public void run() {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Route route = routeAdapter(bufferedReader.readLine());
-            String response;
+            String request = bufferedReader.readLine();
+            Route route = routeAdapter(request);
+            String response = "HTTP/1.1 ";
             if (server.getRoutes().containsKey(route)) {
-                response = (String) server.getRoutes().get(route).callMethod(null);
+                response += "200 OK\r\n\r\n";
+                response += (String) server.getRoutes().get(route).callMethod(null);
             } else {
-                response = "400: Bad request";
+                response += "400 Bad request\r\n\r\n";
             }
             socket.getOutputStream().write(response.getBytes("UTF-8"));
             socket.close();
