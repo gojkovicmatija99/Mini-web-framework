@@ -1,5 +1,6 @@
 package app.server.order.impl;
 
+import com.google.gson.Gson;
 import framework.annotations.http.POST;
 import framework.annotations.http.Path;
 import framework.annotations.spring.Autowired;
@@ -14,7 +15,12 @@ public class OrderController {
     @POST
     @Path("/orderProducts")
     public String postMethod() {
-        orderService.placeOrder();
-        return "Products have been ordered";
+        boolean isOrdered = orderService.placeOrder();
+        Gson gson = new Gson();
+        if (isOrdered) {
+            return gson.toJson("Products have been ordered");
+        } else {
+            return gson.toJson("Products have not been ordered");
+        }
     }
 }
