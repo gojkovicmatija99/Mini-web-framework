@@ -35,3 +35,4 @@ DI Engine is in charge of consulting the Dependency Container, every time it enc
 An user wants to a webstore and he starts by implementing features for product and order. When he creates the controller, service and repository and starts the app, the framework will scan all his created classes, inject dependencies and register routes.
 
 ![alt text](https://github.com/gojkovicmatija99/Mini-web-framework/blob/master/demo.png)
+![alt text](https://github.com/gojkovicmatija99/Mini-web-framework/blob/master/demo2.png)
