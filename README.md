@@ -7,6 +7,7 @@ When instantiating a controller, it is necessary to initialize its attributes us
 Feature:
 - Bean factory, Dependency Container and Dependency Injection Engine
 - Recursive dependency injection
+- Framework based on HTTP and REST, can be tested via Postman or browser
 - Implemented custom annotations like @Bean, @Controller, @Service, @Repository, @Autowire, @Qualifier, @POST and @GET
 
 ## Requirements
@@ -31,3 +32,8 @@ DI Engine is in charge of using reflection to initialize all annotated dependenc
 DI Engine is in charge of having a list of all instances annotated with @Bean (scope = "singleton") or @Service. To initialize them only once during application execution and use them with each injection.
 DI Engine is in charge of first injecting during the initialization of a class, ie. initializes all its attributes using recursion.
 DI Engine is in charge of consulting the Dependency Container, every time it encounters an interface instead of a specific class. From the container, it uses Qualifier to get a class that represents the implementation and uses it to initialize the attribute itself.
+
+## Example
+An user wants to a webstore and he starts by implementing features for product and order. When he creates the controller, service and repository and starts the app, the framework will scan all his created classes, inject dependencies and register routes.
+
+![alt text](https://github.com/gojkovicmatija99/Mini-web-framework/blob/master/demo.png)
