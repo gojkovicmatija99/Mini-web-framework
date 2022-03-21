@@ -20,8 +20,6 @@ It is necessary to create an annotation @Controller which can annotate the class
 The idea is to achieve inversion of control (IOC) starting from the controller attribute. The logic that will initialize the controllers and all their dependencies needs to be separated into a separate class - DI Engine.
 Dependency initialization will occur on controller attributes annotated with @Autowired. Also, there is a possibility that the dependency itself has attributes (other dependencies) annotated with @Autowired. In that case, we will have to solve them recursively - starting from the bottom of the tree.
 We have two instances of initializing attributes annotated with @Autowired.
-To implement dependency injection, the following annotations need to be provided: @Autowired, @Bean, @Service, @Component and @Qualifier.
-The Autowired annotation is used to mark all the attributes of the class that you want to be injected during the initialization of the controller / other dependency.
 
 #### Dependency Container
 When initializing a dependency, the specific type to be instantiated may not be known because the interface was used. Dependency Container is a structure in which we will be able to register a specific implementation (class) for an interface.
